@@ -1,0 +1,74 @@
+#include <Arduino.h>
+// #include <Wire.h>
+#include <SoftwareSerial.h>
+// #include <EEPROM.h>
+#include <Otto.h> //-- Otto Library
+Otto Otto;  //This is Otto!
+
+SoftwareSerial BluetoothSerial(7, 6); // RX | TX 
+
+#define FORWARD 'F'
+#define BACKWARD 'B'
+#define LEFT 'L'
+#define RIGHT 'R'
+#define CIRCLE 'C'
+#define CROSS 'X'
+#define TRIANGLE 'T'
+#define SQUARE 'S'
+#define START 'A'
+#define PAUSE 'P'
+
+#define LeftLeg 2 
+#define RightLeg 3
+#define LeftFoot 4 
+#define RightFoot 5 
+#define Buzzer  13 
+
+void setup() {
+  // put your setup code here, to run once:
+  Otto.init(LeftLeg, RightLeg, LeftFoot, RightFoot, true, Buzzer); //Set the servo pins and Buzzer pina
+  BluetoothSerial.begin(9600);
+
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+  if (BluetoothSerial.available()) {
+    char command = BluetoothSerial.read();
+    executeCommand(command);
+  }
+}
+
+void executeCommand(char command) {
+  switch (command) {
+    case FORWARD:
+      Otto.walk(1,1000,1);
+      break;
+    case BACKWARD:
+      Otto.walk(1,1000,-1);
+      break;
+    case LEFT:
+      Otto.turn(1,1000,1);
+      break;
+    case RIGHT:
+      Otto.turn(1,1000,-1);
+      break;
+    case SQUARE:
+      Otto.bend(1,1000,1);
+      break;
+    case CIRCLE:
+      Otto.bend(1,1000,-1);
+      break;
+    case TRIANGLE:
+      Otto.moonwalker(1,1000,-1);
+      break;
+    case START:
+      Otto.shakeLeg(1,1000,1);
+      break;
+    case CROSS:
+      Otto.home();
+      break;
+    default:
+      break;
+  }
+}
